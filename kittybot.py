@@ -68,11 +68,10 @@ def to_main_menu(update, context):
     for value in USERS.get(chat_id):
         if type(USERS[chat_id][value]) is bool and USERS[chat_id][value]:
             USERS[chat_id][value] = False
-    buttons = BUTTONS
     context.bot.send_message(
         chat_id=chat_id,
         text='Возвращение в главное меню',
-        reply_markup=buttons
+        reply_markup=BUTTONS
     )
 
 # @restricted_access  # убрать комментарий для ограничения доступа
@@ -120,11 +119,10 @@ def get_weather(update, context):
 def wake_up(update, context):
     chat_id = get_chat_id(update)
     name = update.message.chat.first_name
-    buttons = BUTTONS
     context.bot.send_message(
         chat_id=chat_id,
         text=f'Привет, {name}, выберите, пожалуйста, одну из опций',
-        reply_markup=buttons
+        reply_markup=BUTTONS
     )
 
 def get_new_image_cat():
