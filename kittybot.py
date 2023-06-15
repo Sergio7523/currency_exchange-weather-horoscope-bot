@@ -31,6 +31,9 @@ weatherfilter = WeatherFilter()
 URL_WEATHER = 'http://wttr.in/'
 URL_CAT = 'https://api.thecatapi.com/v1/images/search'
 URL_DOG = 'https://api.thedogapi.com/v1/images/search'
+BUTTONS = ReplyKeyboardMarkup(
+    [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
+)
 
 def restricted_access(func):
     def wrapper(*args, **kwargs):
@@ -65,13 +68,11 @@ def to_main_menu(update, context):
     for value in USERS.get(chat_id):
         if type(USERS[chat_id][value]) is bool and USERS[chat_id][value]:
             USERS[chat_id][value] = False
-    button = ReplyKeyboardMarkup(
-        [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
-    )
+    buttons = BUTTONS
     context.bot.send_message(
         chat_id=chat_id,
         text='Возвращение в главное меню',
-        reply_markup=button
+        reply_markup=buttons
     )
 
 # @restricted_access  # убрать комментарий для ограничения доступа
@@ -119,13 +120,11 @@ def get_weather(update, context):
 def wake_up(update, context):
     chat_id = get_chat_id(update)
     name = update.message.chat.first_name
-    button = ReplyKeyboardMarkup(
-        [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
-    )
+    buttons = BUTTONS
     context.bot.send_message(
         chat_id=chat_id,
         text=f'Привет, {name}, выберите, пожалуйста, одну из опций',
-        reply_markup=button
+        reply_markup=buttons
     )
 
 def get_new_image_cat():
