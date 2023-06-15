@@ -20,7 +20,11 @@ logging.basicConfig(
 
 class WeatherFilter(UpdateFilter):
     def filter(self, update):
-        return USERS[get_chat_id(update)]['weather']
+        if (
+            USERS.get(get_chat_id(update)) is None  # временная мера, убрать при подключении бд
+            or USERS.get(get_chat_id(update))['weather']
+        ):
+            return True
 
 
 weatherfilter = WeatherFilter()
