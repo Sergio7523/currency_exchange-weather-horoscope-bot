@@ -63,7 +63,7 @@ def update_db(user):
     with db.connect('kittybot_db.db') as con:
         cur = con.cursor()
         sql_update_query = (
-            """Update users SET name = ?, last_name = ? WHERE chat_id = ?"""
+            """UPDATE users SET name = ?, last_name = ? WHERE chat_id = ?"""
         )
         data = (user[1], user[2], user[0])
         cur.execute(sql_update_query, data)
