@@ -8,8 +8,17 @@ from telegram.ext import (
     CommandHandler, Filters, MessageHandler, Updater, UpdateFilter
 )
 
-from utils import add_user, get_chat_id, ALLOWED_USERS, USERS
+from constants import USERS, URL_CAT, URL_DOG, URL_WEATHER
+from utils import (
+    add_user_to_db,
+    add_users_to_dictionary,
+    create_db,
+    get_chat_id,
+    get_username, restricted_access
+)
 
+create_db()
+add_users_to_dictionary()
 load_dotenv()
 secret_token = os.getenv('TOKEN')
 
@@ -20,38 +29,14 @@ logging.basicConfig(
 
 class WeatherFilter(UpdateFilter):
     def filter(self, update):
-        if (
-            USERS.get(get_chat_id(update)) is None  # временная мера, убрать при подключении бд
-            or USERS.get(get_chat_id(update))['weather']
-        ):
-            return True
-
+        return USERS.get(get_chat_id(update))['weather']
 
 weatherfilter = WeatherFilter()
-URL_WEATHER = 'http://wttr.in/'
-URL_CAT = 'https://api.thecatapi.com/v1/images/search'
-URL_DOG = 'https://api.thedogapi.com/v1/images/search'
-BUTTONS = ReplyKeyboardMarkup(
-    [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
-)
-
-def restricted_access(func):
-    def wrapper(*args, **kwargs):
-        chat_id = get_chat_id(args[0])
-        if chat_id in ALLOWED_USERS:
-            return func(*args, **kwargs)
-        else:
-            args[1].bot.send_message(
-                chat_id=chat_id,
-                text='У Вас нет доступа к этому боту'
-            )
-    return wrapper
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def instructions(update, context):
     chat_id = get_chat_id(update)
-    name = update.message.chat.first_name
+    name = get_username(update)
     context.bot.send_message(
         chat_id=chat_id,
         text=(
@@ -59,23 +44,19 @@ def instructions(update, context):
         f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
     )
-    to_main_menu(update, context)
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def to_main_menu(update, context):
     chat_id = get_chat_id(update)
     for value in USERS.get(chat_id):
-        if type(USERS[chat_id][value]) is bool and USERS[chat_id][value]:
+        if USERS[chat_id][value]:
             USERS[chat_id][value] = False
     context.bot.send_message(
         chat_id=chat_id,
         text='Возвращение в главное меню',
-        reply_markup=BUTTONS
     )
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def weather(update, context):
     chat_id = get_chat_id(update)
     USERS[chat_id]['weather'] = True
@@ -85,7 +66,6 @@ def weather(update, context):
     )
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def get_weather(update, context):
     chat_id = get_chat_id(update)
     msg = update.message.text
@@ -93,7 +73,6 @@ def get_weather(update, context):
         'format': 2,
         'M': ''
     }
-    USERS[chat_id]['weather'] = False
     try:
         responce = requests.get(f'{URL_WEATHER}{msg}', params)
         if responce.status_code == 200:
@@ -115,14 +94,18 @@ def get_weather(update, context):
         to_main_menu(update, context)
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def wake_up(update, context):
     chat_id = get_chat_id(update)
-    name = update.message.chat.first_name
+    name = get_username(update)
+    user = (chat_id, name)
+    add_user_to_db(user)
+    buttons = ReplyKeyboardMarkup(
+    [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
+)
     context.bot.send_message(
         chat_id=chat_id,
         text=f'Привет, {name}, выберите, пожалуйста, одну из опций',
-        reply_markup=BUTTONS
+        reply_markup=buttons
     )
 
 def get_new_image_cat():
@@ -148,13 +131,11 @@ def get_new_image_dog():
     return random_dog
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def new_cat(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_cat())
 
 # @restricted_access  # убрать комментарий для ограничения доступа
-@add_user
 def new_dog(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_dog())

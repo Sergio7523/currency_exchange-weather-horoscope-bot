@@ -1,24 +1,54 @@
-import os
+import sqlite3 as db
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-USERS = {}
-ALLOWED_USERS = os.getenv('ALLOWED_USERS').split(',')
-
+from constants import USERS, ALLOWED_USERS
 
 def get_chat_id(update):
-    chat_id = str(update.effective_chat.id)
-    return chat_id
+    return str(update.effective_chat.id)
 
-def add_user(func):
+def get_username(update):
+    return update.message.chat.first_name
+
+def create_db():
+    with db.connect('kittybot_db.db') as con:
+        cur = con.cursor()
+        cur.execute(
+            """CREATE TABLE IF NOT EXISTS users(
+            chat_id TEXT,
+            name TEXT DEFAULT отсутствует,
+            CONSTRAINT chat_id_unique UNIQUE (chat_id)
+            );"""
+        )
+
+def restricted_access(func):
     def wrapper(*args, **kwargs):
         chat_id = get_chat_id(args[0])
-        if chat_id not in USERS:
-            USERS[chat_id] = {
-                'weather': False,
-                'username': args[0].message.chat.username
-            }
-        return func(*args, **kwargs)
+        if chat_id in ALLOWED_USERS:
+            return func(*args, **kwargs)
+        else:
+            args[1].bot.send_message(
+                chat_id=chat_id,
+                text='У Вас нет доступа к этому боту'
+            )
     return wrapper
+
+def add_user_to_db(user):
+    with db.connect('kittybot_db.db') as con:
+        cur = con.cursor()
+        cur.execute('INSERT INTO users VALUES(?, ?)', user)
+    add_users_to_dictionary()
+
+def get_users_from_db():
+    with db.connect('kittybot_db.db') as con:
+        cur = con.cursor()
+        cur.execute('SELECT * FROM users')
+        result = cur.fetchall()
+        return result
+
+def add_users_to_dictionary():
+    users = get_users_from_db()
+    if len(users):
+        for user in users:
+            if user[0] not in USERS:
+                USERS[user[0]] = {
+                    'weather': False,
+                }
