@@ -6,7 +6,7 @@ def get_chat_id(update):
     return str(update.effective_chat.id)
 
 def get_username(update):
-    return update.message.chat.first_name
+    return update.message.chat.first_name, update.message.chat.last_name
 
 def reset(chat_id):
     for value in USERS.get(chat_id):
@@ -19,7 +19,8 @@ def create_db():
         cur.execute(
             """CREATE TABLE IF NOT EXISTS users(
             chat_id TEXT,
-            name TEXT DEFAULT отсутствует,
+            name TEXT,
+            last_name TEXT,
             CONSTRAINT chat_id_unique UNIQUE (chat_id)
             );"""
         )
@@ -39,7 +40,7 @@ def restricted_access(func):
 def add_user_to_db(user):
     with db.connect('kittybot_db.db') as con:
         cur = con.cursor()
-        cur.execute('INSERT INTO users VALUES(?, ?)', user)
+        cur.execute('INSERT INTO users VALUES(?, ?, ?)', user)
     add_users_to_dictionary()
 
 def get_users_from_db():
@@ -57,3 +58,12 @@ def add_users_to_dictionary():
                 USERS[user[0]] = {
                     'weather': False,
                 }
+
+def update_db(user):
+    with db.connect('kittybot_db.db') as con:
+        cur = con.cursor()
+        sql_update_query = (
+            """Update users SET name = ?, last_name = ? WHERE chat_id = ?"""
+        )
+        data = (user[1], user[2], user[0])
+        cur.execute(sql_update_query, data)

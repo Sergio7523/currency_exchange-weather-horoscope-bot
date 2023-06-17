@@ -18,7 +18,8 @@ from utils import (
     get_chat_id,
     get_username,
     reset,
-    restricted_access
+    restricted_access,
+    update_db
 )
 
 create_db()
@@ -86,10 +87,14 @@ def get_weather(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def wake_up(update, context):
     chat_id = get_chat_id(update)
-    name = get_username(update)
-    user = (chat_id, name)
-    if user not in get_users_from_db():
+    name, last_name = get_username(update)
+    user = (chat_id, name, last_name)
+    users_in_db = get_users_from_db()
+    chat_ids_in_db = [user_chat_id[0] for user_chat_id in users_in_db]
+    if chat_id not in chat_ids_in_db:
         add_user_to_db(user)
+    elif chat_id in chat_ids_in_db and user not in users_in_db:
+        update_db(user)
     buttons = ReplyKeyboardMarkup(
     [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
 )
