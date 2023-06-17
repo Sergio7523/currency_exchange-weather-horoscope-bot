@@ -12,6 +12,7 @@ ___
 ### Технологии
 - Python 3.10
 - python-telegram-bot==13.14
+- sqlite3
 ___
 
 ## Установка
