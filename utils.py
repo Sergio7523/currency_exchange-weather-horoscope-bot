@@ -8,6 +8,11 @@ def get_chat_id(update):
 def get_username(update):
     return update.message.chat.first_name
 
+def reset(chat_id):
+    for value in USERS.get(chat_id):
+        if USERS[chat_id][value]:
+            USERS[chat_id][value] = False
+
 def create_db():
     with db.connect('kittybot_db.db') as con:
         cur = con.cursor()

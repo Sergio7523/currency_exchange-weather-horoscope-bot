@@ -13,8 +13,11 @@ from utils import (
     add_user_to_db,
     add_users_to_dictionary,
     create_db,
+    get_users_from_db,
     get_chat_id,
-    get_username, restricted_access
+    get_username,
+    reset,
+    restricted_access
 )
 
 create_db()
@@ -43,17 +46,6 @@ def instructions(update, context):
         f'{name} я пока не умею поддерживать беседу, '
         f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
-    )
-
-# @restricted_access  # убрать комментарий для ограничения доступа
-def to_main_menu(update, context):
-    chat_id = get_chat_id(update)
-    for value in USERS.get(chat_id):
-        if USERS[chat_id][value]:
-            USERS[chat_id][value] = False
-    context.bot.send_message(
-        chat_id=chat_id,
-        text='Возвращение в главное меню',
     )
 
 # @restricted_access  # убрать комментарий для ограничения доступа
@@ -92,14 +84,15 @@ def get_weather(update, context):
             text='Ошибка на сервере погоды, попробуйте сделать запрос позже',
             )
     finally:
-        to_main_menu(update, context)
+        reset(chat_id)
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def wake_up(update, context):
     chat_id = get_chat_id(update)
     name = get_username(update)
     user = (chat_id, name)
-    add_user_to_db(user)
+    if user not in get_users_from_db():
+        add_user_to_db(user)
     buttons = ReplyKeyboardMarkup(
     [['/weather'], ['/new_cat'], ['/new_dog']], resize_keyboard=True
 )
@@ -135,11 +128,13 @@ def get_new_image_dog():
 def new_cat(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_cat())
+    reset(chat_id)
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def new_dog(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_dog())
+    reset(chat_id)
 
 def main():
     updater = Updater(token=secret_token)
