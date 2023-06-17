@@ -32,7 +32,7 @@ def restricted_access(func):
         else:
             args[1].bot.send_message(
                 chat_id=chat_id,
-                text='У Вас нет доступа к этому боту'
+                text='Доступ ограничен'
             )
     return wrapper
 

@@ -5,10 +5,11 @@ import requests
 from dotenv import load_dotenv
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (
-    CommandHandler, Filters, MessageHandler, Updater, UpdateFilter
+    CommandHandler, Filters, MessageHandler, Updater
 )
 
 from constants import USERS, URL_CAT, URL_DOG, URL_WEATHER
+from filters import WeatherFilter
 from utils import (
     add_user_to_db,
     add_users_to_dictionary,
@@ -24,17 +25,12 @@ create_db()
 add_users_to_dictionary()
 load_dotenv()
 secret_token = os.getenv('TOKEN')
+weatherfilter = WeatherFilter()
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
-
-class WeatherFilter(UpdateFilter):
-    def filter(self, update):
-        return USERS.get(get_chat_id(update))['weather']
-
-weatherfilter = WeatherFilter()
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def instructions(update, context):
@@ -47,6 +43,7 @@ def instructions(update, context):
         f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
     )
+
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def weather(update, context):
