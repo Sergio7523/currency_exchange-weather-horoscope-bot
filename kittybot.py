@@ -85,7 +85,8 @@ def get_weather(update, context):
             chat_id=chat_id,
             text='Город не найден, проверьте правильность ввода',
             )
-    except:
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к серверу погоды: {error}')
         context.bot.send_message(
             chat_id=chat_id,
             text='Ошибка на сервере погоды, попробуйте сделать запрос позже',
