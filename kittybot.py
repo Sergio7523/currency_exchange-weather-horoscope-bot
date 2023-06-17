@@ -40,7 +40,7 @@ def instructions(update, context):
     context.bot.send_message(
         chat_id=chat_id,
         text=(
-        f'{name} я пока не умею поддерживать беседу, '
+        f'{name[0]} я пока не умею поддерживать беседу, '
         f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
     )
