@@ -31,9 +31,12 @@ def restricted_access(func):
         if chat_id in ALLOWED_USERS:
             return func(*args, **kwargs)
         else:
+            message = 'У вас нет доступа к этому боту'
+            if func.__name__ != 'wake_up':
+                message = 'У вас нет доступа к этой функции'
             args[1].bot.send_message(
                 chat_id=chat_id,
-                text='Доступ ограничен'
+                text=message
             )
     return wrapper
 

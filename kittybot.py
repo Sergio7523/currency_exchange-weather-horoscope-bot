@@ -36,11 +36,11 @@ logging.basicConfig(
 # @restricted_access  # убрать комментарий для ограничения доступа
 def instructions(update, context):
     chat_id = get_chat_id(update)
-    name = get_username(update)
+    name, _ = get_username(update)
     context.bot.send_message(
         chat_id=chat_id,
         text=(
-        f'{name[0]} я пока не умею поддерживать беседу, '
+        f'{name} я пока не умею поддерживать беседу, '
         f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
     )
