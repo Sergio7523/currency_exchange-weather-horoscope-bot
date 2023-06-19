@@ -66,6 +66,7 @@ def instructions(update, context):
             f'{name} я пока не умею поддерживать беседу, '
             f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
+        reply_markup=get_buttons(chat_id)
     )
 
 
