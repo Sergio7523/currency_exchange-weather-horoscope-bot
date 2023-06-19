@@ -60,6 +60,7 @@ def add_users_to_dictionary():
             if user[0] not in USERS:
                 USERS[user[0]] = {
                     'weather': False,
+                    'horoscope': False,
                 }
 
 def update_db(user):
