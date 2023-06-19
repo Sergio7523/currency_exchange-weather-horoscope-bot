@@ -1,9 +1,16 @@
 from http import HTTPStatus
+import logging
 
 from bs4 import BeautifulSoup
 import requests
 
 from constants import CAT_URL, DOG_URL, HOROSCOPE_URL, WEATHER_URL
+
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
 
 horoscope_signs_links = {
     'овен': f'{HOROSCOPE_URL}aries',
@@ -22,33 +29,48 @@ horoscope_signs_links = {
 
 
 def horoscope_sign_info(sign):
+    failed = 'Ошибка на сервере гороскопа, попробуйте сделать запрос позже'
+    sign = sign.lower()
+    if sign not in horoscope_signs_links:
+        return 'Такого знака зодиака не существует!'
     link = horoscope_signs_links.get(sign)
-    response = requests.get(link)
-    if response.status_code != HTTPStatus.OK:
-        return 'Ошибка на сервере гороскопа, попробуйте сделать запрос позже'
+    try:
+        response = requests.get(link)
+        if response.status_code != HTTPStatus.OK:
+            return failed
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к сайту гороскопа: {error}')
+        return failed
     soup = BeautifulSoup(response.text, "html.parser")
     return soup.find('p').text.strip('<p>')
 
 
 def weather_info(city):
+    failed = 'Ошибка на сервере погоды, попробуйте сделать запрос позже'
     params = {
         'format': 2,
         'M': ''
     }
-    response = requests.get(f'{WEATHER_URL}{city}', params)
     result = None
-    if response.status_code == HTTPStatus.OK:
-        result = response.text
-    elif response.status_code == HTTPStatus.NOT_FOUND:
-        result = 'Город не найден'
-    else:
-        result = 'Ошибка на сервере погоды, попробуйте сделать запрос позже'
+    try:
+        response = requests.get(f'{WEATHER_URL}{city}', params)
+        if response.status_code == HTTPStatus.OK:
+            result = response.text
+        elif response.status_code == HTTPStatus.NOT_FOUND:
+            result = 'Город не найден'
+        else:
+            result = failed
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к API погоды: {error}')
+        result = failed
     return result
 
 
 def get_new_image_cat():
-    response = requests.get(CAT_URL)
-    if response.status_code != HTTPStatus.OK:
+    try:
+        response = requests.get(CAT_URL)
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к cat_API: {error}')
         new_url = DOG_URL
         response = requests.get(new_url)
     response = response.json()
@@ -57,8 +79,10 @@ def get_new_image_cat():
 
 
 def get_new_image_dog():
-    response = requests.get(DOG_URL)
-    if response.status_code != HTTPStatus.OK:
+    try:
+        response = requests.get(DOG_URL)
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к dog_API: {error}')
         new_url = CAT_URL
         response = requests.get(new_url)
     response = response.json()
