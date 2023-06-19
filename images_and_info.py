@@ -20,6 +20,7 @@ horoscope_signs_links = {
     'рыбы': f'{HOROSCOPE_URL}pisces',
 }
 
+
 def horoscope_sign_info(sign):
     link = horoscope_signs_links.get(sign)
     response = requests.get(link)
@@ -44,6 +45,7 @@ def weather_info(city):
         result = 'Ошибка на сервере погоды, попробуйте сделать запрос позже'
     return result
 
+
 def get_new_image_cat():
     response = requests.get(CAT_URL)
     if response.status_code != HTTPStatus.OK:
@@ -52,6 +54,7 @@ def get_new_image_cat():
     response = response.json()
     result = response[0].get('url')
     return result
+
 
 def get_new_image_dog():
     response = requests.get(DOG_URL)

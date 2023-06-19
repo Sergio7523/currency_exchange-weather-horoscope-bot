@@ -37,6 +37,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+
 def get_buttons(chat_id):
     buttons = ReplyKeyboardMarkup(
         [['/weather'], ['/horoscope'], ['/new_cat'], ['/new_dog']],
@@ -44,14 +45,15 @@ def get_buttons(chat_id):
     )
     if USERS[chat_id]['horoscope']:
         buttons = ReplyKeyboardMarkup(
-        [
-            ['овен'], ['телец'], ['близнецы'],['рак'],
-            ['лев'], ['дева'],['весы'], ['скорпион'],
-            ['стрелец'], ['козерог'], ['водолей'], ['рыбы']
-        ],
-        resize_keyboard=True,
-    )
+            [
+                ['овен'], ['телец'], ['близнецы'], ['рак'],
+                ['лев'], ['дева'], ['весы'], ['скорпион'],
+                ['стрелец'], ['козерог'], ['водолей'], ['рыбы']
+            ],
+            resize_keyboard=True,
+        )
     return buttons
+
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def instructions(update, context):
@@ -60,10 +62,11 @@ def instructions(update, context):
     context.bot.send_message(
         chat_id=chat_id,
         text=(
-        f'{name} я пока не умею поддерживать беседу, '
-        f'выберите, пожалуйста, 1 из опций в главном меню.'
+            f'{name} я пока не умею поддерживать беседу, '
+            f'выберите, пожалуйста, 1 из опций в главном меню.'
         ),
     )
+
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def weather(update, context):
@@ -74,7 +77,7 @@ def weather(update, context):
         text='напечатайте название города',
     )
 
-# @restricted_access  # убрать комментарий для ограничения доступа
+
 def get_weather(update, context):
     chat_id = get_chat_id(update)
     city = update.message.text
@@ -86,6 +89,7 @@ def get_weather(update, context):
         reply_markup=get_buttons(chat_id)
     )
 
+
 # @restricted_access  # убрать комментарий для ограничения доступа
 def horoscope(update, context):
     chat_id = get_chat_id(update)
@@ -95,6 +99,7 @@ def horoscope(update, context):
         text='выберите знак зодиака',
         reply_markup=get_buttons(chat_id)
     )
+
 
 def get_horoscope(update, context):
     chat_id = get_chat_id(update)
@@ -106,6 +111,7 @@ def get_horoscope(update, context):
         text=result,
         reply_markup=get_buttons(chat_id)
     )
+
 
 # @restricted_access  # убрать комментарий для ограничения доступа
 def wake_up(update, context):
@@ -124,17 +130,20 @@ def wake_up(update, context):
         reply_markup=get_buttons(chat_id)
     )
 
+
 # @restricted_access  # убрать комментарий для ограничения доступа
 def new_cat(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_cat())
     reset(chat_id)
 
+
 # @restricted_access  # убрать комментарий для ограничения доступа
 def new_dog(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_dog())
     reset(chat_id)
+
 
 def main():
     updater = Updater(token=secret_token)
