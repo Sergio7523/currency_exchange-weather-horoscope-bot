@@ -40,7 +40,7 @@ logging.basicConfig(
 
 def get_buttons(chat_id):
     buttons = ReplyKeyboardMarkup(
-        [['/weather'], ['/horoscope'], ['/new_cat'], ['/new_dog']],
+        [['/weather', '/horoscope'], ['/new_cat', '/new_dog']],
         resize_keyboard=True
     )
     if USERS[chat_id]['horoscope']:
