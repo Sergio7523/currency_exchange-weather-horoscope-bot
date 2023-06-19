@@ -37,6 +37,10 @@ def horoscope_sign_info(sign):
     try:
         response = requests.get(link)
         if response.status_code != HTTPStatus.OK:
+            logging.error(
+                f'Статус код != 200 ,'
+                f'полученный статус код: {response.status_code}'
+            )
             return failed
     except Exception as error:
         logging.error(f'Ошибка при запросе к сайту гороскопа: {error}')
