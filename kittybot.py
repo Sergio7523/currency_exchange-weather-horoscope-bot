@@ -127,9 +127,9 @@ def currency(update, context):
     context.bot.send_message(
         chat_id=chat_id,
         text=(
-            f'Введите количество валюты и валютную пару\n'
-            f'например: 1000 rub eur или 10.90 (10 рублей 90 копеек) '
-            f'rub usd\n'
+            f'Введите количество валюты и любую валютную пару\n'
+            f'например: 1000 rub eur или 10.90 (10 долларов 90 центов) '
+            f'usd msn\n'
             f'коды поддерживаемых валют:\n'
             f'{", ".join(value for value in CURRENCIES)}'
         )
