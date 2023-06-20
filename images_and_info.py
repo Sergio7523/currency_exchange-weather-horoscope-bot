@@ -4,7 +4,14 @@ import logging
 from bs4 import BeautifulSoup
 import requests
 
-from constants import CAT_URL, DOG_URL, HOROSCOPE_URL, WEATHER_URL
+from constants import (
+    CAT_URL,
+    CURRENCIES,
+    CURRENCIES_URL,
+    DOG_URL,
+    HOROSCOPE_SIGNS_URLS,
+    WEATHER_URL
+)
 
 
 logging.basicConfig(
@@ -12,30 +19,15 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-horoscope_signs_links = {
-    'овен': f'{HOROSCOPE_URL}aries',
-    'телец': f'{HOROSCOPE_URL}taurus',
-    'близнецы': f'{HOROSCOPE_URL}gemini',
-    'рак': f'{HOROSCOPE_URL}cancer',
-    'лев': f'{HOROSCOPE_URL}leo',
-    'дева': f'{HOROSCOPE_URL}virgo',
-    'весы': f'{HOROSCOPE_URL}libra',
-    'скорпион': f'{HOROSCOPE_URL}scorpio',
-    'стрелец': f'{HOROSCOPE_URL}sagittarius',
-    'козерог': f'{HOROSCOPE_URL}capricorn',
-    'водолей': f'{HOROSCOPE_URL}aquarius',
-    'рыбы': f'{HOROSCOPE_URL}pisces',
-}
-
 
 def horoscope_sign_info(sign):
     failed = 'Ошибка на сервере гороскопа, попробуйте сделать запрос позже'
     sign = sign.lower()
-    if sign not in horoscope_signs_links:
+    if sign not in HOROSCOPE_SIGNS_URLS:
         return 'Такого знака зодиака не существует!'
-    link = horoscope_signs_links.get(sign)
+    url = HOROSCOPE_SIGNS_URLS.get(sign)
     try:
-        response = requests.get(link)
+        response = requests.get(url)
         if response.status_code != HTTPStatus.OK:
             logging.error(
                 f'Статус код != 200 ,'
@@ -92,3 +84,27 @@ def get_new_image_dog():
     response = response.json()
     result = response[0].get('url')
     return result
+
+
+def currency_info(requested_values):
+    message = 'Некорректный запрос'
+    requested_values = requested_values.lower().split()
+    if len(requested_values) != 3:
+        return message
+    amount, currency_from, currency_to = requested_values
+    if currency_from not in CURRENCIES or currency_to not in CURRENCIES:
+        return message
+    try:
+        amount = float(amount)
+    except ValueError:
+        return message
+    url = f'{CURRENCIES_URL}/{currency_from}/{currency_to}'
+    try:
+        response = requests.get(url)
+    except Exception as error:
+        logging.error(f'Ошибка при запросе к API валют: {error}')
+        message = 'Ошибка на сервере курсов валют'
+    currency_rate = response.json()
+    result = amount * currency_rate
+    message = f'{amount:.2f} {currency_from} = {result:.2f} {currency_to}'
+    return message

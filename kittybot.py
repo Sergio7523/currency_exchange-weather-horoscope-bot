@@ -7,11 +7,16 @@ from telegram.ext import (
     CommandHandler, Filters, MessageHandler, Updater
 )
 
-from constants import USERS
-from filters import HoroscopeFilter, WeatherFilter
+from constants import CURRENCIES, USERS
+from filters import CurrencyFilter, HoroscopeFilter, WeatherFilter
 from images_and_info import (
-    horoscope_sign_info, weather_info, get_new_image_cat, get_new_image_dog
+    currency_info,
+    horoscope_sign_info,
+    weather_info,
+    get_new_image_cat,
+    get_new_image_dog
 )
+
 from utils import (
     add_user_to_db,
     add_users_to_dictionary,
@@ -30,7 +35,7 @@ load_dotenv()
 secret_token = os.getenv('TOKEN')
 weather_filter = WeatherFilter()
 horoscope_filter = HoroscopeFilter()
-
+currencyfilter = CurrencyFilter()
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -40,7 +45,7 @@ logging.basicConfig(
 
 def get_buttons(chat_id):
     buttons = ReplyKeyboardMarkup(
-        [['/weather', '/horoscope'], ['/new_cat', '/new_dog']],
+        [['/weather', '/horoscope'], ['/new_cat', '/new_dog'], ['/currency']],
         resize_keyboard=True
     )
     if USERS[chat_id]['horoscope']:
@@ -116,6 +121,34 @@ def get_horoscope(update, context):
 
 
 # @restricted_access  # убрать комментарий для ограничения доступа
+def currency(update, context):
+    chat_id = get_chat_id(update)
+    USERS[chat_id]['currency'] = True
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=(
+            f'Введите количество валюты и валютную пару\n'
+            f'например: 1000 rub eur или 10.90 (десять рублей 90 копеек)'
+            f'rub usd\n'
+            f'поддерживаемые валюты на данный момент:\n'
+            f'{", ".join(value for value in CURRENCIES)}'
+        )
+    )
+
+
+def get_currency(update, context):
+    chat_id = get_chat_id(update)
+    requested_values = update.message.text
+    reset(chat_id)
+    result = currency_info(requested_values)
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=result,
+        reply_markup=get_buttons(chat_id)
+    )
+
+
+# @restricted_access  # убрать комментарий для ограничения доступа
 def wake_up(update, context):
     chat_id = get_chat_id(update)
     name, last_name = get_username(update)
@@ -152,11 +185,15 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CommandHandler('weather', weather))
     updater.dispatcher.add_handler(CommandHandler('horoscope', horoscope))
+    updater.dispatcher.add_handler(CommandHandler('currency', currency))
     updater.dispatcher.add_handler(CommandHandler('new_cat', new_cat))
     updater.dispatcher.add_handler(CommandHandler('new_dog', new_dog))
     updater.dispatcher.add_handler(MessageHandler(weather_filter, get_weather))
     updater.dispatcher.add_handler(
         MessageHandler(horoscope_filter, get_horoscope)
+    )
+    updater.dispatcher.add_handler(
+        MessageHandler(currencyfilter, get_currency)
     )
     updater.dispatcher.add_handler(MessageHandler(Filters.text, instructions))
     updater.start_polling()

@@ -1,17 +1,22 @@
+from functools import wraps
 import sqlite3 as db
 
 from constants import USERS, ALLOWED_USERS
 
+
 def get_chat_id(update):
     return str(update.effective_chat.id)
 
+
 def get_username(update):
     return update.message.chat.first_name, update.message.chat.last_name
+
 
 def reset(chat_id):
     for value in USERS.get(chat_id):
         if USERS[chat_id][value]:
             USERS[chat_id][value] = False
+
 
 def create_db():
     with db.connect('kittybot_db.db') as con:
@@ -25,7 +30,9 @@ def create_db():
             );"""
         )
 
+
 def restricted_access(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
         chat_id = get_chat_id(args[0])
         if chat_id in ALLOWED_USERS:
@@ -40,11 +47,13 @@ def restricted_access(func):
             )
     return wrapper
 
+
 def add_user_to_db(user):
     with db.connect('kittybot_db.db') as con:
         cur = con.cursor()
         cur.execute('INSERT INTO users VALUES(?, ?, ?)', user)
     add_users_to_dictionary()
+
 
 def get_users_from_db():
     with db.connect('kittybot_db.db') as con:
@@ -52,6 +61,7 @@ def get_users_from_db():
         cur.execute('SELECT * FROM users')
         result = cur.fetchall()
         return result
+
 
 def add_users_to_dictionary():
     users = get_users_from_db()
@@ -61,7 +71,9 @@ def add_users_to_dictionary():
                 USERS[user[0]] = {
                     'weather': False,
                     'horoscope': False,
+                    'currency': False
                 }
+
 
 def update_db(user):
     with db.connect('kittybot_db.db') as con:

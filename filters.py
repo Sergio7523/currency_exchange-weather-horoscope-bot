@@ -12,3 +12,8 @@ class WeatherFilter(UpdateFilter):
 class HoroscopeFilter(UpdateFilter):
     def filter(self, update):
         return USERS.get(get_chat_id(update))['horoscope']
+
+
+class CurrencyFilter(UpdateFilter):
+    def filter(self, update):
+        return USERS.get(get_chat_id(update))['currency']
