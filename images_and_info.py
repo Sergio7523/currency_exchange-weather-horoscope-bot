@@ -106,5 +106,8 @@ def currency_info(requested_values):
         message = 'Ошибка на сервере курсов валют'
     currency_rate = response.json()
     result = amount * currency_rate
-    message = f'{amount:.2f} {currency_from} = {result:.2f} {currency_to}'
+    message = (
+        f'{amount:.2f} {CURRENCIES.get(currency_from)} '
+        f'= {result:.2f} {CURRENCIES.get(currency_to)}'
+    )
     return message
