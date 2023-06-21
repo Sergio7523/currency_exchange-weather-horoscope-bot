@@ -7,7 +7,8 @@ from constants import USERS, ALLOWED_USERS
 class Users:
 
     def __init__(
-            self, name=None,
+            self,
+            name=None,
             last_name=None,
             weather=False,
             horoscope=False,

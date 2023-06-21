@@ -74,3 +74,4 @@ CURRENCIES = {
     'sar': 'Saudi riyal',
     'qar': 'Qatari riyal'
 }
+print(len(CURRENCIES))
