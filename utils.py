@@ -140,10 +140,11 @@ def add_users_to_dictionary():
 
 
 def update_db(user):
+    chat_id, name, last_name = user
     with db.connect('bot_db.db') as con:
         cur = con.cursor()
         sql_update_query = (
             """UPDATE users SET name = ?, last_name = ? WHERE chat_id = ?"""
         )
-        data = (user[1], user[2], user[0])
+        data = (name, last_name, chat_id)
         cur.execute(sql_update_query, data)
