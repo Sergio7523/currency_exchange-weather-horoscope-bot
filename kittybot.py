@@ -48,7 +48,7 @@ def get_buttons(chat_id):
         [['/weather', '/horoscope'], ['/new_cat', '/new_dog'], ['/currency']],
         resize_keyboard=True
     )
-    if USERS[chat_id]['horoscope']:
+    if USERS[chat_id].horoscope:
         buttons = ReplyKeyboardMarkup(
             [
                 ['овен', 'телец', 'близнецы'],
@@ -78,7 +78,7 @@ def instructions(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def weather(update, context):
     chat_id = get_chat_id(update)
-    USERS[chat_id]['weather'] = True
+    USERS[chat_id].weather = True
     context.bot.send_message(
         chat_id=chat_id,
         text='напечатайте название города',
@@ -100,7 +100,7 @@ def get_weather(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def horoscope(update, context):
     chat_id = get_chat_id(update)
-    USERS[chat_id]['horoscope'] = True
+    USERS[chat_id].horoscope = True
     context.bot.send_message(
         chat_id=chat_id,
         text='выберите знак зодиака',
@@ -123,7 +123,7 @@ def get_horoscope(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def currency(update, context):
     chat_id = get_chat_id(update)
-    USERS[chat_id]['currency'] = True
+    USERS[chat_id].currency = True
     context.bot.send_message(
         chat_id=chat_id,
         text=(

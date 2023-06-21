@@ -4,6 +4,73 @@ import sqlite3 as db
 from constants import USERS, ALLOWED_USERS
 
 
+class Users:
+
+    def __init__(
+            self, name=None,
+            last_name=None,
+            weather=False,
+            horoscope=False,
+            currency=False
+    ):
+        self.__name = name
+        self.__last_name = last_name
+        self.__weather = weather
+        self.__horoscope = horoscope
+        self.__currency = currency
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, value):
+        self.__name = value
+
+    @property
+    def last_name(self):
+        return self.__last_name
+
+    @last_name.setter
+    def last_name(self, value):
+        self.__last_name = value
+
+    @property
+    def weather(self):
+        return self.__weather
+
+    @weather.setter
+    def weather(self, value):
+        self.__weather = value
+
+    @property
+    def horoscope(self):
+        return self.__horoscope
+
+    @horoscope.setter
+    def horoscope(self, value):
+        self.__horoscope = value
+
+    @property
+    def currency(self):
+        return self.__currency
+
+    @currency.setter
+    def currency(self, value):
+        self.__currency = value
+
+    def reset(self):
+        self.__weather = False
+        self.__horoscope = False
+        self.__currency = False
+
+    def __str__(self):
+        return (
+            f'Пользователь {self.__name} {self.last_name}'
+            if self.__last_name else f'Пользователь {self.__name}'
+        )
+
+
 def get_chat_id(update):
     return str(update.effective_chat.id)
 
@@ -13,9 +80,7 @@ def get_username(update):
 
 
 def reset(chat_id):
-    for value in USERS.get(chat_id):
-        if USERS[chat_id][value]:
-            USERS[chat_id][value] = False
+    USERS.get(chat_id).reset()
 
 
 def create_db():
@@ -67,12 +132,10 @@ def add_users_to_dictionary():
     users = get_users_from_db()
     if len(users):
         for user in users:
-            if user[0] not in USERS:
-                USERS[user[0]] = {
-                    'weather': False,
-                    'horoscope': False,
-                    'currency': False
-                }
+            chat_id, name, last_name = user
+            usr = Users(name, last_name)
+            if chat_id not in USERS:
+                USERS[chat_id] = usr
 
 
 def update_db(user):
