@@ -7,7 +7,7 @@ from telegram.ext import (
     CommandHandler, Filters, MessageHandler, Updater
 )
 
-from constants import CURRENCIES, USERS
+from constants import CURRENCIES
 from filters import CurrencyFilter, HoroscopeFilter, WeatherFilter
 from images_and_info import (
     currency_info,
@@ -19,18 +19,20 @@ from images_and_info import (
 
 from utils import (
     add_user_to_db,
-    add_users_to_dictionary,
     create_db,
     get_users_from_db,
     get_chat_id,
     get_username,
+    get_user_horoscope,
     reset,
     restricted_access,
-    update_db
+    update_db,
+    update_currency,
+    update_horoscope,
+    update_weather
 )
 
 create_db()
-add_users_to_dictionary()
 load_dotenv()
 secret_token = os.getenv('TOKEN')
 weather_filter = WeatherFilter()
@@ -48,7 +50,7 @@ def get_buttons(chat_id):
         [['/weather', '/horoscope'], ['/new_cat', '/new_dog'], ['/currency']],
         resize_keyboard=True
     )
-    if USERS[chat_id].horoscope:
+    if get_user_horoscope(chat_id):
         buttons = ReplyKeyboardMarkup(
             [
                 ['овен', 'телец', 'близнецы'],
@@ -78,7 +80,7 @@ def instructions(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def weather(update, context):
     chat_id = get_chat_id(update)
-    USERS[chat_id].weather = True
+    update_weather(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text='напечатайте название города',
@@ -100,7 +102,7 @@ def get_weather(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def horoscope(update, context):
     chat_id = get_chat_id(update)
-    USERS[chat_id].horoscope = True
+    update_horoscope(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text='выберите знак зодиака',
@@ -123,7 +125,7 @@ def get_horoscope(update, context):
 # @restricted_access  # убрать комментарий для ограничения доступа
 def currency(update, context):
     chat_id = get_chat_id(update)
-    USERS[chat_id].currency = True
+    update_currency(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
         text=(
