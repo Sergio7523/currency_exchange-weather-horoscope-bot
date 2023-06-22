@@ -126,7 +126,7 @@ def get_users_from_db():
         cur = con.cursor()
         cur.execute('SELECT * FROM users')
         result = cur.fetchall()
-        return result
+    return result
 
 
 def add_users_to_dictionary():
