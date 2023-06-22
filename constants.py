@@ -27,7 +27,7 @@ HOROSCOPE_SIGNS_URLS = {
 }
 
 USERS = {}
-ALLOWED_USERS = os.getenv('ALLOWED_USERS').split(',')
+ALLOWED_USERS = os.getenv('ALLOWED_USERS').split(', ')
 
 CURRENCIES = {
     'rub': 'Russian Ruble',
