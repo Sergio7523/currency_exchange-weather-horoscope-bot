@@ -42,8 +42,8 @@ def create_db():
         create_users = (
                 """CREATE TABLE IF NOT EXISTS users(
                 chat_id INTEGER PRIMARY KEY,
-                name TEXT,
-                last_name TEXT
+                name VARCHAR(100),
+                last_name VARCHAR(100)
                 );"""
         )
         create_user_statuses = (
