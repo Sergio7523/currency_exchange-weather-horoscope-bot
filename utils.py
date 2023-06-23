@@ -14,21 +14,21 @@ def get_username(update):
     return update.message.chat.first_name, update.message.chat.last_name
 
 
-def reset(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
-            cur.execute(
-                """UPDATE users_statuses
-                SET weather=%s, horoscope=%s, currency=%s
-                WHERE chat_id=%s""",
-                (False, False, False, chat_id,)
+def restricted_access(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        chat_id = get_chat_id(args[0])
+        if chat_id in ALLOWED_USERS:
+            return func(*args, **kwargs)
+        else:
+            message = 'У вас нет доступа к этому боту'
+            if func.__name__ != 'wake_up':
+                message = 'У вас нет доступа к этой функции'
+            args[1].bot.send_message(
+                chat_id=chat_id,
+                text=message
             )
+    return wrapper
 
 
 def create_db():
@@ -59,23 +59,6 @@ def create_db():
             cur.execute(create_user_statuses)
 
 
-def restricted_access(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        chat_id = get_chat_id(args[0])
-        if chat_id in ALLOWED_USERS:
-            return func(*args, **kwargs)
-        else:
-            message = 'У вас нет доступа к этому боту'
-            if func.__name__ != 'wake_up':
-                message = 'У вас нет доступа к этой функции'
-            args[1].bot.send_message(
-                chat_id=chat_id,
-                text=message
-            )
-    return wrapper
-
-
 def add_user_to_db(user):
     with db.connect(
         dbname=DB_NAME,
@@ -97,20 +80,6 @@ def add_user_to_db(user):
             )
 
 
-def get_users_from_db():
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
-            cur.execute('SELECT * FROM users;')
-            result = cur.fetchall()
-    return result
-
-
 def update_db(user):
     chat_id, name, last_name = user
     with db.connect(
@@ -128,6 +97,20 @@ def update_db(user):
             )
             data = (name, last_name, chat_id)
             cur.execute(sql_update_query, data)
+
+
+def get_users_from_db():
+    with db.connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT
+    ) as con:
+        with con.cursor() as cur:
+            cur.execute('SELECT * FROM users;')
+            result = cur.fetchall()
+    return result
 
 
 def update_weather(chat_id):
@@ -197,3 +180,20 @@ def get_user_statuses(chat_id):
             )
             result = cur.fetchone()
     return result
+
+
+def reset(chat_id):
+    with db.connect(
+        dbname=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        host=DB_HOST,
+        port=DB_PORT
+    ) as con:
+        with con.cursor() as cur:
+            cur.execute(
+                """UPDATE users_statuses
+                SET weather=%s, horoscope=%s, currency=%s
+                WHERE chat_id=%s""",
+                (False, False, False, chat_id,)
+            )
