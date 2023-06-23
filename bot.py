@@ -23,7 +23,7 @@ from utils import (
     get_users_from_db,
     get_chat_id,
     get_username,
-    get_user_horoscope,
+    get_user_statuses,
     reset,
     restricted_access,
     update_db,
@@ -50,7 +50,7 @@ def get_buttons(chat_id):
         [['/weather', '/horoscope'], ['/new_cat', '/new_dog'], ['/currency']],
         resize_keyboard=True
     )
-    if get_user_horoscope(chat_id):
+    if get_user_statuses(chat_id)[1]:
         buttons = ReplyKeyboardMarkup(
             [
                 ['овен', 'телец', 'близнецы'],

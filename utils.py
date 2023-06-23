@@ -25,9 +25,9 @@ def reset(chat_id):
         with con.cursor() as cur:
             cur.execute(
                 """UPDATE users
-                SET weather=False, horoscope=False, currency=False
+                SET weather=%s, horoscope=%s, currency=%s
                 WHERE chat_id=%s""",
-                (chat_id,)
+                (False, False, False, chat_id,)
             )
 
 
@@ -130,9 +130,9 @@ def update_weather(chat_id):
         with con.cursor() as cur:
             cur.execute(
                 """UPDATE users
-                SET weather=True
+                SET weather=%s
                 WHERE chat_id=%s;""",
-                (chat_id,)
+                (True, chat_id)
             )
 
 
@@ -147,9 +147,9 @@ def update_horoscope(chat_id):
         with con.cursor() as cur:
             cur.execute(
                 """UPDATE users
-                SET horoscope=True
+                SET horoscope=%s
                 WHERE chat_id=%s;""",
-                (chat_id,)
+                (True, chat_id)
             )
 
 
@@ -164,13 +164,13 @@ def update_currency(chat_id):
         with con.cursor() as cur:
             cur.execute(
                 """UPDATE users
-                SET currency=True
+                SET currency=%s
                 WHERE chat_id=%s;""",
-                (chat_id,)
+                (True, chat_id)
             )
 
 
-def get_user_horoscope(chat_id):
+def get_user_statuses(chat_id):
     with db.connect(
         dbname=DB_NAME,
         user=DB_USER,
@@ -180,42 +180,9 @@ def get_user_horoscope(chat_id):
     ) as con:
         with con.cursor() as cur:
             cur.execute(
-                """SELECT horoscope FROM users WHERE chat_id=%s;""", (chat_id,)
+                """SELECT weather, horoscope, currency
+                FROM users
+                WHERE chat_id=%s;""", (chat_id,)
             )
             result = cur.fetchone()
-            result, = result
-    return result
-
-
-def get_user_weather(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
-            cur.execute(
-                """SELECT weather FROM users WHERE chat_id=%s;""", (chat_id,)
-            )
-            result = cur.fetchone()
-            result, = result
-    return result
-
-
-def get_user_currency(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
-            cur.execute(
-                """SELECT currency FROM users WHERE chat_id=%s;""", (chat_id,)
-            )
-            result = cur.fetchone()
-            result, = result
     return result
