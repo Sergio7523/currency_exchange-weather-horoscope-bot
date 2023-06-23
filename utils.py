@@ -7,7 +7,7 @@ from constants import (
 
 
 def get_chat_id(update):
-    return str(update.effective_chat.id)
+    return update.effective_chat.id
 
 
 def get_username(update):
@@ -24,7 +24,7 @@ def reset(chat_id):
     ) as con:
         with con.cursor() as cur:
             cur.execute(
-                """UPDATE users
+                """UPDATE users_statuses
                 SET weather=%s, horoscope=%s, currency=%s
                 WHERE chat_id=%s""",
                 (False, False, False, chat_id,)
@@ -39,18 +39,24 @@ def create_db():
         host=DB_HOST,
         port=DB_PORT
     ) as con:
-        with con.cursor() as cur:
-            cur.execute(
+        create_users = (
                 """CREATE TABLE IF NOT EXISTS users(
-                chat_id TEXT,
+                chat_id INTEGER PRIMARY KEY,
                 name TEXT,
-                last_name TEXT,
+                last_name TEXT
+                );"""
+        )
+        create_user_statuses = (
+                """CREATE TABLE IF NOT EXISTS users_statuses(
+                chat_id INTEGER REFERENCES users (chat_id) ON DELETE CASCADE,
                 weather BOOL DEFAULT False,
                 horoscope BOOL DEFAULT False,
-                currency BOOL DEFAULT False,
-                CONSTRAINT chat_id_unique UNIQUE (chat_id)
+                currency BOOL DEFAULT False
                 );"""
-            )
+        )
+        with con.cursor() as cur:
+            cur.execute(create_users)
+            cur.execute(create_user_statuses)
 
 
 def restricted_access(func):
@@ -80,9 +86,14 @@ def add_user_to_db(user):
     ) as con:
         with con.cursor() as cur:
             cur.execute(
-                """INSERT INTO users (chat_id, name, last_name)
+                """INSERT INTO users
                 VALUES(%s, %s, %s);""",
                 user
+            )
+            cur.execute(
+                """INSERT INTO users_statuses (chat_id)
+                VALUES(%s);""",
+                (user[0],)
             )
 
 
@@ -129,7 +140,7 @@ def update_weather(chat_id):
     ) as con:
         with con.cursor() as cur:
             cur.execute(
-                """UPDATE users
+                """UPDATE users_statuses
                 SET weather=%s
                 WHERE chat_id=%s;""",
                 (True, chat_id)
@@ -146,7 +157,7 @@ def update_horoscope(chat_id):
     ) as con:
         with con.cursor() as cur:
             cur.execute(
-                """UPDATE users
+                """UPDATE users_statuses
                 SET horoscope=%s
                 WHERE chat_id=%s;""",
                 (True, chat_id)
@@ -163,7 +174,7 @@ def update_currency(chat_id):
     ) as con:
         with con.cursor() as cur:
             cur.execute(
-                """UPDATE users
+                """UPDATE users_statuses
                 SET currency=%s
                 WHERE chat_id=%s;""",
                 (True, chat_id)
@@ -181,7 +192,7 @@ def get_user_statuses(chat_id):
         with con.cursor() as cur:
             cur.execute(
                 """SELECT weather, horoscope, currency
-                FROM users
+                FROM users_statuses
                 WHERE chat_id=%s;""", (chat_id,)
             )
             result = cur.fetchone()
