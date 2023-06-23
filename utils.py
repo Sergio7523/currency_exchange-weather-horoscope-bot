@@ -62,7 +62,7 @@ def create_db():
                 currency BOOL DEFAULT False
                 );"""
         )
-        with con.cursor() as cur:
+        with get_cursor(con) as cur:
             cur.execute(create_users)
             cur.execute(create_user_statuses)
 
