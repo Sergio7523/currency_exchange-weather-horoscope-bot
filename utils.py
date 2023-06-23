@@ -31,14 +31,22 @@ def restricted_access(func):
     return wrapper
 
 
-def create_db():
-    with db.connect(
+def connect_to_db():
+    return db.connect(
         dbname=DB_NAME,
         user=DB_USER,
         password=DB_PASSWORD,
         host=DB_HOST,
         port=DB_PORT
-    ) as con:
+    )
+
+
+def get_cursor(con):
+    return con.cursor()
+
+
+def create_db():
+    with connect_to_db() as con:
         create_users = (
                 """CREATE TABLE IF NOT EXISTS users(
                 chat_id INTEGER PRIMARY KEY,
@@ -60,14 +68,8 @@ def create_db():
 
 
 def add_user_to_db(user):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute(
                 """INSERT INTO users
                 VALUES(%s, %s, %s);""",
@@ -82,14 +84,8 @@ def add_user_to_db(user):
 
 def update_db(user):
     chat_id, name, last_name = user
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             sql_update_query = (
                 """UPDATE users
                 SET name=%s, last_name=%s
@@ -100,28 +96,16 @@ def update_db(user):
 
 
 def get_users_from_db():
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute('SELECT * FROM users;')
             result = cur.fetchall()
     return result
 
 
 def update_weather(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute(
                 """UPDATE users_statuses
                 SET weather=%s
@@ -131,14 +115,8 @@ def update_weather(chat_id):
 
 
 def update_horoscope(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute(
                 """UPDATE users_statuses
                 SET horoscope=%s
@@ -148,14 +126,8 @@ def update_horoscope(chat_id):
 
 
 def update_currency(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute(
                 """UPDATE users_statuses
                 SET currency=%s
@@ -165,14 +137,8 @@ def update_currency(chat_id):
 
 
 def get_user_statuses(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute(
                 """SELECT weather, horoscope, currency
                 FROM users_statuses
@@ -183,14 +149,8 @@ def get_user_statuses(chat_id):
 
 
 def reset(chat_id):
-    with db.connect(
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        host=DB_HOST,
-        port=DB_PORT
-    ) as con:
-        with con.cursor() as cur:
+    with connect_to_db() as con:
+        with get_cursor(con) as cur:
             cur.execute(
                 """UPDATE users_statuses
                 SET weather=%s, horoscope=%s, currency=%s
