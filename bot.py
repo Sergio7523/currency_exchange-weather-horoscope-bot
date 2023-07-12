@@ -132,9 +132,9 @@ def horoscope(update, context):
 
 def get_horoscope(update, context):
     chat_id = get_chat_id(update)
-    horoscope_sign = update.message.text
+    message = update.message.text
     reset(chat_id)
-    result = horoscope_sign_info(horoscope_sign)
+    result = horoscope_sign_info(message)
     context.bot.send_message(
         chat_id=chat_id,
         text=result,
