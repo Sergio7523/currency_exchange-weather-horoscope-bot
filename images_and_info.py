@@ -9,7 +9,8 @@ from constants import (
     CURRENCIES,
     CURRENCIES_URL,
     DOG_URL,
-    HOROSCOPE_SIGNS_URLS,
+    HOROSCOPE_SIGNS,
+    HOROSCOPE_URL,
     WEATHER_URL
 )
 
@@ -28,11 +29,14 @@ logging.basicConfig(
 def horoscope_sign_info(sign):
     failed = 'Ошибка на сервере гороскопа, попробуйте сделать запрос позже'
     sign = sign.lower()
-    if sign not in HOROSCOPE_SIGNS_URLS:
+    params = {
+        'znak': HOROSCOPE_SIGNS.get(sign)
+    }
+    if sign not in HOROSCOPE_SIGNS:
         return 'Такого знака зодиака не существует!'
-    url = HOROSCOPE_SIGNS_URLS.get(sign)
+    url = HOROSCOPE_URL
     try:
-        response = requests.get(url)
+        response = requests.get(url, params=params)
         if response.status_code != HTTPStatus.OK:
             logging.error(
                 f'Статус код != 200 ,'
@@ -49,8 +53,8 @@ def horoscope_sign_info(sign):
 def weather_info(city):
     failed = 'Ошибка на сервере погоды, попробуйте сделать запрос позже'
     params = {
-        'format': 2,
-        'M': ''
+        'format': 4,
+        'M': '',
     }
     result = None
     try:
