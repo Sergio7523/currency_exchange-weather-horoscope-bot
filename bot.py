@@ -128,16 +128,23 @@ def horoscope(update, context):
     update_horoscope(chat_id)
     context.bot.send_message(
         chat_id=chat_id,
-        text='выберите знак зодиака',
+        text=(
+        'Для получения гороскопа на сегодняшний день:\n'
+        '- выберите или напечатайте знак зодиака.\n'
+        'Для получения гороскопа на текущую неделю:\n'
+        '- введите запрос в формате:\n' 
+        '"знак зодиака" "неделя".\n'
+        'Пример: овен неделя, телец неделя и т.д.'
+        ),
         reply_markup=get_buttons(chat_id)
     )
 
 
 def get_horoscope(update, context):
     chat_id = get_chat_id(update)
-    horoscope_sign = update.message.text
+    message = update.message.text
     reset(chat_id)
-    result = horoscope_sign_info(horoscope_sign)
+    result = horoscope_sign_info(message)
     context.bot.send_message(
         chat_id=chat_id,
         text=result,

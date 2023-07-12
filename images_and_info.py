@@ -26,14 +26,25 @@ logging.basicConfig(
 )
 
 
-def horoscope_sign_info(sign):
+def horoscope_sign_info(msg):
     failed = 'Ошибка на сервере гороскопа, попробуйте сделать запрос позже'
-    sign = sign.lower()
-    params = {
-        'znak': HOROSCOPE_SIGNS.get(sign)
-    }
-    if sign not in HOROSCOPE_SIGNS:
-        return 'Такого знака зодиака не существует!'
+    incorrect_request = 'Некорректный запрос'
+    msg = msg.lower().split()
+    if len(msg) not in (1, 2):
+        return incorrect_request
+    if len(msg) == 2 and msg[0] in HOROSCOPE_SIGNS and msg[1] == 'неделя':
+        sign, _ = msg
+        params = {
+            'znak': HOROSCOPE_SIGNS.get(sign),
+            'kn': 'week'
+        }
+    elif len(msg) == 1 and msg[0] in HOROSCOPE_SIGNS:
+        sign = msg[0]
+        params = {
+            'znak': HOROSCOPE_SIGNS.get(sign)
+        }
+    else:
+        return incorrect_request
     url = HOROSCOPE_URL
     try:
         response = requests.get(url, params=params)
@@ -47,7 +58,17 @@ def horoscope_sign_info(sign):
         logging.error(f'Ошибка при запросе к сайту гороскопа: {error}')
         return failed
     soup = BeautifulSoup(response.text, "html.parser")
-    return soup.find('p').text.strip('<p>')
+    if len(msg) == 1:
+        return soup.find('p').text.strip('<p>')
+    else:
+        return (
+            '\n ** '.join(
+                [
+                    day_info.get_text().strip('<p>')
+                    for day_info in soup.find_all('p')
+                ]
+            )
+        )
 
 
 def weather_info(city):
