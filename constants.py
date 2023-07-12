@@ -10,6 +10,7 @@ CAT_URL = 'https://api.thecatapi.com/v1/images/search'
 DOG_URL = 'https://api.thedogapi.com/v1/images/search'
 HOROSCOPE_URL = 'https://1001goroskop.ru/'
 CURRENCIES_URL = 'https://api.coingate.com/v2/rates/merchant/'
+BOT_OWNER = os.getenv('BOT_OWNER')
 
 HOROSCOPE_SIGNS = {
     'овен': 'aries',

@@ -1,7 +1,7 @@
 from functools import wraps
 import sqlite3 as db
 
-from constants import USERS, ALLOWED_USERS
+from constants import ALLOWED_USERS, BOT_OWNER, USERS
 
 
 class Users:
@@ -101,12 +101,17 @@ def restricted_access(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         chat_id = get_chat_id(args[0])
-        if chat_id in ALLOWED_USERS:
+        if str(chat_id) in ALLOWED_USERS:
             return func(*args, **kwargs)
         else:
-            message = 'У вас нет доступа к этому боту'
+            message = 'У вас нет доступа к этому боту.'
             if func.__name__ != 'wake_up':
-                message = 'У вас нет доступа к этой функции'
+                message = (
+                    'У вас нет доступа к этой функции.\n'
+                    'Для получения доступа отправьте ID чата владельцу бота:\n'
+                    f'{BOT_OWNER}\n'
+                    'Ваш ID можно узнать нажав /user_info.'
+                )
             args[1].bot.send_message(
                 chat_id=chat_id,
                 text=message

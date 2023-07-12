@@ -45,7 +45,11 @@ logging.basicConfig(
 
 def get_buttons(chat_id):
     buttons = ReplyKeyboardMarkup(
-        [['/weather', '/horoscope'], ['/new_cat', '/new_dog'], ['/currency']],
+        [
+            ['/weather', '/horoscope'],
+            ['/new_cat', '/new_dog'],
+            ['/currency', '/user_info']
+        ],
         resize_keyboard=True
     )
     if USERS[chat_id].horoscope:
@@ -59,6 +63,24 @@ def get_buttons(chat_id):
             resize_keyboard=True,
         )
     return buttons
+
+
+def user_info(update, context):
+    chat_id = get_chat_id(update)
+    name, last_name = get_username(update)
+    if not last_name:
+        last_name = 'фамилия не указана'
+    context.bot.send_message(
+        chat_id=chat_id,
+        text=(
+            f'Информация вашего профиля:\n'
+            f'ID чата: {chat_id}\n'
+            f'имя: {name}\n'
+            f'фамилия: {last_name}\n'
+        ),
+        reply_markup=get_buttons(chat_id)
+    )
+    reset(chat_id)
 
 
 # @restricted_access  # убрать комментарий для ограничения доступа
@@ -75,7 +97,7 @@ def instructions(update, context):
     )
 
 
-# @restricted_access  # убрать комментарий для ограничения доступа
+@restricted_access  # Закомментировать для снятия ограничения
 def weather(update, context):
     chat_id = get_chat_id(update)
     USERS[chat_id].weather = True
@@ -97,7 +119,7 @@ def get_weather(update, context):
     )
 
 
-# @restricted_access  # убрать комментарий для ограничения доступа
+@restricted_access  # Закомментировать для снятия ограничения
 def horoscope(update, context):
     chat_id = get_chat_id(update)
     USERS[chat_id].horoscope = True
@@ -120,7 +142,7 @@ def get_horoscope(update, context):
     )
 
 
-# @restricted_access  # убрать комментарий для ограничения доступа
+@restricted_access  # Закомментировать для снятия ограничения
 def currency(update, context):
     chat_id = get_chat_id(update)
     USERS[chat_id].currency = True
@@ -166,14 +188,14 @@ def wake_up(update, context):
     )
 
 
-# @restricted_access  # убрать комментарий для ограничения доступа
+@restricted_access  # Закомментировать для снятия ограничения
 def new_cat(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_cat())
     reset(chat_id)
 
 
-# @restricted_access  # убрать комментарий для ограничения доступа
+@restricted_access  # Закомментировать для снятия ограничения
 def new_dog(update, context):
     chat_id = get_chat_id(update)
     context.bot.send_photo(chat_id, get_new_image_dog())
@@ -188,6 +210,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('currency', currency))
     updater.dispatcher.add_handler(CommandHandler('new_cat', new_cat))
     updater.dispatcher.add_handler(CommandHandler('new_dog', new_dog))
+    updater.dispatcher.add_handler(CommandHandler('user_info', user_info))
     updater.dispatcher.add_handler(MessageHandler(weather_filter, get_weather))
     updater.dispatcher.add_handler(
         MessageHandler(horoscope_filter, get_horoscope)
