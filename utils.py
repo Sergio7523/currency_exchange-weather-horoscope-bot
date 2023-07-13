@@ -4,7 +4,25 @@ import sqlite3 as db
 from constants import ALLOWED_USERS, BOT_OWNER, USERS
 
 
+class ValueSetter:
+
+    def __set_name__(self, owner, name):
+        self.name = '_' + name
+
+    def __get__(self, instance, owner):
+        return getattr(instance, self.name)
+
+    def __set__(self, instance, value):
+        return setattr(instance, self.name, value)
+
+
 class Users:
+
+    name = ValueSetter()
+    last_name = ValueSetter()
+    weather = ValueSetter()
+    horoscope = ValueSetter()
+    currency = ValueSetter()
 
     def __init__(
             self,
@@ -14,61 +32,21 @@ class Users:
             horoscope=False,
             currency=False
     ):
-        self.__name = name
-        self.__last_name = last_name
-        self.__weather = weather
-        self.__horoscope = horoscope
-        self.__currency = currency
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, value):
-        self.__name = value
-
-    @property
-    def last_name(self):
-        return self.__last_name
-
-    @last_name.setter
-    def last_name(self, value):
-        self.__last_name = value
-
-    @property
-    def weather(self):
-        return self.__weather
-
-    @weather.setter
-    def weather(self, value):
-        self.__weather = value
-
-    @property
-    def horoscope(self):
-        return self.__horoscope
-
-    @horoscope.setter
-    def horoscope(self, value):
-        self.__horoscope = value
-
-    @property
-    def currency(self):
-        return self.__currency
-
-    @currency.setter
-    def currency(self, value):
-        self.__currency = value
+        self.name = name
+        self.last_name = last_name
+        self.weather = weather
+        self.horoscope = horoscope
+        self.currency = currency
 
     def reset(self):
-        self.__weather = False
-        self.__horoscope = False
-        self.__currency = False
+        self.weather = False
+        self.horoscope = False
+        self.currency = False
 
     def __str__(self):
         return (
-            f'Пользователь {self.__name} {self.last_name}'
-            if self.__last_name else f'Пользователь {self.__name}'
+            f'Пользователь {self.name} {self.last_name}'
+            if self.last_name else f'Пользователь {self.name}'
         )
 
 

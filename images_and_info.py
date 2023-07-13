@@ -58,17 +58,15 @@ def horoscope_sign_info(msg):
         logging.error(f'Ошибка при запросе к сайту гороскопа: {error}')
         return failed
     soup = BeautifulSoup(response.text, "html.parser")
-    if len(msg) == 1:
-        return soup.find('p').text.strip('<p>')
-    else:
-        return (
-            '\n ** '.join(
-                [
-                    day_info.get_text().strip('<p>')
-                    for day_info in soup.find_all('p')
-                ]
-            )
+    return (
+        soup.find('p').text.strip('<p>') if len(msg) == 1
+        else '\n ** '.join(
+            [
+                day_info.get_text().strip('<p>')
+                for day_info in soup.find_all('p')
+            ]
         )
+    )
 
 
 def weather_info(city):
