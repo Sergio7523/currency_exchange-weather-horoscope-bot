@@ -37,6 +37,11 @@ source venv/scripts/activate
 pip install -r requirements.txt
 ```
 
+Запустить бота:
+```sh
+python bot.py
+```
+
 ** Для установки на Linux и MacOs использовать команды python3 и source env/bin/activate
 ___
 
@@ -46,5 +51,5 @@ ___
 
 Запустить контейнеры:
 ```sh
-docker-compose up -d
+docker compose up -d
 ```
