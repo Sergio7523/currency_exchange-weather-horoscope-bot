@@ -29,13 +29,6 @@ from utils import (
     update_db
 )
 
-create_db()
-add_users_to_dictionary()
-load_dotenv()
-secret_token = os.getenv('TOKEN')
-weather_filter = WeatherFilter()
-horoscope_filter = HoroscopeFilter()
-currencyfilter = CurrencyFilter()
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -68,6 +61,7 @@ def get_buttons(chat_id):
 def user_info(update, context):
     chat_id = get_chat_id(update)
     name, last_name = get_username(update)
+    reset(chat_id)
     if not last_name:
         last_name = 'фамилия не указана'
     context.bot.send_message(
@@ -80,7 +74,6 @@ def user_info(update, context):
         ),
         reply_markup=get_buttons(chat_id)
     )
-    reset(chat_id)
 
 
 # @restricted_access  # убрать комментарий для ограничения доступа
@@ -210,6 +203,13 @@ def new_dog(update, context):
 
 
 def main():
+    create_db()
+    add_users_to_dictionary()
+    load_dotenv()
+    secret_token = os.getenv('TOKEN')
+    weather_filter = WeatherFilter()
+    horoscope_filter = HoroscopeFilter()
+    currencyfilter = CurrencyFilter()
     updater = Updater(token=secret_token)
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CommandHandler('weather', weather))
