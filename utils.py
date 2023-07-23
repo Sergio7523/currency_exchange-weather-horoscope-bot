@@ -50,28 +50,6 @@ def get_cursor(con):
     return con.cursor()
 
 
-def create_db():
-    with connect_to_db() as con:
-        create_users = (
-                """CREATE TABLE IF NOT EXISTS users(
-                chat_id INTEGER PRIMARY KEY,
-                name VARCHAR(100),
-                last_name VARCHAR(100)
-                );"""
-        )
-        create_user_statuses = (
-                """CREATE TABLE IF NOT EXISTS users_statuses(
-                chat_id INTEGER REFERENCES users (chat_id) ON DELETE CASCADE,
-                weather BOOL DEFAULT False,
-                horoscope BOOL DEFAULT False,
-                currency BOOL DEFAULT False
-                );"""
-        )
-        with get_cursor(con) as cur:
-            cur.execute(create_users)
-            cur.execute(create_user_statuses)
-
-
 def add_user_to_db(user):
     with connect_to_db() as con:
         with get_cursor(con) as cur:

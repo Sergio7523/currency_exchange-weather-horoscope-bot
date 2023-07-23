@@ -19,7 +19,6 @@ from images_and_info import (
 
 from utils import (
     add_user_to_db,
-    create_db,
     get_users_from_db,
     get_chat_id,
     get_username,
@@ -207,7 +206,6 @@ def new_dog(update, context):
 
 
 def main():
-    create_db()
     load_dotenv()
     secret_token = os.getenv('TOKEN')
     weather_filter = WeatherFilter()

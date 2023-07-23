@@ -1,0 +1,17 @@
+CREATE DATABASE "put your db_name here";
+\c "put your db_name here";
+CREATE TABLE IF NOT EXISTS users(
+    chat_id INTEGER PRIMARY KEY,
+    name VARCHAR(100),
+    last_name VARCHAR(100)
+    );
+CREATE TABLE IF NOT EXISTS users_statuses(
+    chat_id INTEGER REFERENCES users (chat_id) ON DELETE CASCADE,
+    weather BOOL DEFAULT False,
+    horoscope BOOL DEFAULT False,
+    currency BOOL DEFAULT False
+    );
+CREATE USER "put your db_user here" WITH ENCRYPTED PASSWORD '"put your db_password here"';
+GRANT CONNECT ON DATABASE "put your db_name here" TO "put your db_user here";
+GRANT SELECT, UPDATE, INSERT ON TABLE users TO "put your db_user here";
+GRANT SELECT, UPDATE, INSERT ON TABLE users_statuses TO "put your db_user here";

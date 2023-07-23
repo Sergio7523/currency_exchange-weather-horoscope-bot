@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 
 bot_db.db
+*.sql
