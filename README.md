@@ -23,11 +23,13 @@ ___
 - Docker (ветка main)
 ___
 
-## Установка
+## Установка (ветка sqlite)
+
+Создать в корне проекта файл .env по образцу.env.example
 
 Cоздать и активировать виртуальное окружение:
 ```sh
-python -m venv env
+python -m venv venv
 
 source venv/scripts/activate
 ```
@@ -48,6 +50,8 @@ ___
 ## Запуск проекта в контейнере
 
 Скачать и установить [Docker](https://www.docker.com/).
+
+Создать в корне проекта файлы .env и initdb.sql по образцам .env.example и initdb.sql.example
 
 Запустить контейнеры:
 ```sh
