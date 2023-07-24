@@ -51,9 +51,11 @@ ___
 
 Скачать и установить [Docker](https://www.docker.com/).
 
-Создать в корне проекта файлы .env и initdb.sql по образцам .env.example и initdb.sql.example
+Создать в файлы .env и initdb.sql по образцам .env.example и initdb.sql.example
 
 Запустить контейнеры:
 ```sh
 docker compose up -d
 ```
+
+После запуска контейнеров в целях безопасности удалить файл initdb.sql
