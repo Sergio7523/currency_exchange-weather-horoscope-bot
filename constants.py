@@ -28,7 +28,7 @@ HOROSCOPE_SIGNS = {
 }
 
 USERS = {}
-ALLOWED_USERS = os.getenv('ALLOWED_USERS').split(', ')
+ALLOWED_USERS = tuple(map(str.strip, os.getenv('ALLOWED_USERS').split(',')))
 
 CURRENCIES = {
     'rub': 'Russian Ruble',
